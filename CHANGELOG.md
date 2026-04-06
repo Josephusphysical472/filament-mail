@@ -2,6 +2,12 @@
 
 All notable changes to `filament-mail` will be documented in this file.
 
+## 3.1.2 - 2026-04-06
+
+### Fixed
+
+- Use correct Filament v5 API types (Schema, BackedEnum, non-static view) for MailDashboard
+
 ## 3.1.1 - 2026-04-06
 
 ### Fixed
