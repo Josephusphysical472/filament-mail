@@ -1,0 +1,49 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - src
+
+    level: 5
+
+    ignoreErrors:
+        -
+            message: '#Unsafe usage of new static#'
+            reportUnmatched: false
+        -
+            message: '#should return static\(.+\) but returns#'
+            reportUnmatched: false
+        -
+            message: '#Parameter \#1 \$view of .+ expects view-string\|null, string given#'
+            reportUnmatched: false
+        -
+            message: '#Call to static method make\(\) on an unknown class#'
+            reportUnmatched: false
+        -
+            message: '#class .+ not found#'
+            reportUnmatched: false
+        -
+            message: '#expects Illuminate\\Support\\Carbon, Carbon\\Carbon given#'
+            reportUnmatched: false
+        -
+            message: '#Access to an undefined property#'
+            reportUnmatched: false
+        -
+            message: '#Cannot access property .+ on#'
+            reportUnmatched: false
+        -
+            message: '#property .+ is not the same as type#'
+            reportUnmatched: false
+        -
+            message: '#overrides non-static property#'
+            reportUnmatched: false
+        -
+            message: '#Return type .+ is not covariant#'
+            reportUnmatched: false
+        -
+            message: '#Parameter \#1 .+ expects .+, Illuminate\\Database\\Eloquent\\Model\|int\|string#'
+            reportUnmatched: false
+        -
+            message: '#Cannot call method .+ on Illuminate\\Database\\Eloquent\\Model\|int\|string#'
+            reportUnmatched: false

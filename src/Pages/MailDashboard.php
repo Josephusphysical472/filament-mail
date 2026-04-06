@@ -1,0 +1,67 @@
+<?php
+
+declare(strict_types=1);
+
+namespace JeffersonGoncalves\FilamentMail\Pages;
+
+use BackedEnum;
+use Filament\Forms\Components\Select;
+use Filament\Pages\Dashboard;
+use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
+use Filament\Schemas\Schema;
+use JeffersonGoncalves\FilamentMail\FilamentMailPlugin;
+use JeffersonGoncalves\FilamentMail\Widgets\MailAnalyticsChart;
+use JeffersonGoncalves\FilamentMail\Widgets\MailDeliveryRateChart;
+use JeffersonGoncalves\FilamentMail\Widgets\MailStatsOverview;
+
+class MailDashboard extends Dashboard
+{
+    use HasFiltersForm;
+
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar-square';
+
+    protected static ?int $navigationSort = 0;
+
+    protected static ?string $title = 'Mail Dashboard';
+
+    protected static ?string $slug = 'mail-dashboard';
+
+    protected string $view = 'filament-mail::pages.mail-dashboard';
+
+    public static function getNavigationGroup(): ?string
+    {
+        return FilamentMailPlugin::get()->getNavigationGroup();
+    }
+
+    public function filtersForm(Schema $schema): Schema
+    {
+        return $schema->components([
+            Select::make('period')
+                ->label('Period')
+                ->options([
+                    '7' => 'Last 7 days',
+                    '30' => 'Last 30 days',
+                    '90' => 'Last 90 days',
+                ])
+                ->default('7'),
+        ]);
+    }
+
+    public function getWidgets(): array
+    {
+        return [
+            MailStatsOverview::class,
+            MailAnalyticsChart::class,
+            MailDeliveryRateChart::class,
+        ];
+    }
+
+    public function getColumns(): int|array
+    {
+        return [
+            'sm' => 1,
+            'md' => 2,
+            'xl' => 3,
+        ];
+    }
+}
